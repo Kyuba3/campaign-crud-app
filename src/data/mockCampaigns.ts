@@ -10,6 +10,7 @@ export const mockCampaigns: Campaign[] = [
     status: true,
     city: 'Warsaw',
     radius: 10,
+    productId: '1',
   },
   {
     id: '2',
@@ -20,5 +21,6 @@ export const mockCampaigns: Campaign[] = [
     status: false,
     city: 'Krakow',
     radius: 15,
+    productId: '2',
   },
 ];

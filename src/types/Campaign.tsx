@@ -7,4 +7,5 @@ export interface Campaign {
   status: boolean;
   city: string;
   radius: number;
+  productId: string;
 }
