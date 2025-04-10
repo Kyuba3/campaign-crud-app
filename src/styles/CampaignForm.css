@@ -1,0 +1,95 @@
+.campaign-form {
+  width: 100%;
+  max-width: 640px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  padding-top: 1%;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select {
+  padding: 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  background: white;
+  transition: border 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #10b981;
+  outline: none;
+}
+
+.keyword-suggestions {
+  position: absolute;
+  z-index: 50;
+  width: 100%;
+  max-height: 10rem;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  margin-top: 0.25rem;
+}
+
+.keyword-suggestions li {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.keyword-suggestions li:hover,
+.keyword-suggestions li.highlighted {
+  background-color: #ecfdf5;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.submit-btn {
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  border: none;
+}
+
+.cancel-btn {
+  background-color: #d86b7f;
+  color: #374151;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  transition: background 0.2s;
+  border: none;
+}
+
+.cancel-btn:hover {
+  background-color: #e03333;
+}
