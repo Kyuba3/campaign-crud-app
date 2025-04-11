@@ -36,29 +36,48 @@
   outline: none;
 }
 
-.keyword-suggestions {
-  position: absolute;
-  z-index: 50;
-  width: 100%;
-  max-height: 10rem;
-  overflow-y: auto;
-  background: white;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-  margin-top: 0.25rem;
+.keyword-bubbles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
-.keyword-suggestions li {
-  padding: 0.5rem 0.75rem;
+.suggested-keyword {
+  padding: 6px 12px;
+  background-color: #e2e8f0;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  color: #1f2937;
   cursor: pointer;
-  transition: background 0.2s ease;
+  border: 1px solid #d1d5db;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 75px;
+  max-width: 75px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.keyword-suggestions li:hover,
-.keyword-suggestions li.highlighted {
-  background-color: #ecfdf5;
+.suggested-keyword:hover {
+  background-color: #cbd5e1;
 }
+
+.suggested-keyword.selected {
+  background-color: #10b981;
+  color: white;
+  font-weight: 600;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
 
 .hint {
   font-size: 0.85rem;
@@ -82,7 +101,7 @@
 
 .cancel-btn {
   background-color: #d86b7f;
-  color: #374151;
+  color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.75rem;
   font-weight: 500;
@@ -91,5 +110,31 @@
 }
 
 .cancel-btn:hover {
-  background-color: #e03333;
+  background-color: #be2121;
 }
+
+@media (max-width: 640px) {
+  .form-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .submit-btn,
+  .cancel-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .keyword-bubbles {
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .suggested-keyword {
+    min-width: 80px;
+    max-width: 100px;
+  }
+}
+
+

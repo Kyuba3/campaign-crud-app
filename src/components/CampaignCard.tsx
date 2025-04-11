@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { Campaign } from "../../types/Campaign";
-import { useCampaigns } from "../../context/CampaignContext";
-import { useEmerald } from "../../context/EmeraldContext";
+import { Campaign } from "../types/Campaign";
+import { useCampaigns } from "../context/CampaignContext";
+import { useEmerald } from "../context/EmeraldContext";
 import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { ConfirmModal } from "../ConfirmModal";
+import { ConfirmModal } from "./ConfirmModal";
 interface Props {
   campaign: Campaign;
 }
