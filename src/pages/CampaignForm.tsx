@@ -2,11 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEmerald } from "../context/EmeraldContext";
 import { useCampaigns } from "../context/CampaignContext";
-import { PRODUCTS } from "../data/mockProducts";
 import "../styles/CampaignForm.css";
 import { TownSelect } from "../components/TownSelect";
 
-const SUGGESTED_KEYWORDS = ["sale", "new", "fashion", "tech", "deal", "summer", "winter"];
+const SUGGESTED_KEYWORDS = ["sale", "fashion", "tech",];
 
 export const CampaignForm = () => {
   const navigate = useNavigate();
@@ -185,32 +184,62 @@ export const CampaignForm = () => {
           />
         </div>
 
-        <div className="form-group relative">
-          <label>Keywords *</label>
-          <input
-            type="text"
-            name="keywords"
-            placeholder="Type and separate with commas"
-            required
-            ref={inputRef}
-            value={form.keywords}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-          />
-          {form.keywords && keywordSuggestions.length > 0 && (
-            <ul className="keyword-suggestions" ref={suggestionsRef}>
-              {keywordSuggestions.map((kw, index) => (
-                <li
-                  key={kw}
-                  className={index === highlightedIndex ? "highlighted" : ""}
-                  onClick={() => handleSuggestionClick(kw)}
-                >
-                  {kw}
-                </li>
-              ))}
-            </ul>
-          )}
+        <div className="form-group">
+        <label>Keywords *</label>
+        <input
+          type="text"
+          name="keywords"
+          placeholder="Type and separate with commas"
+          required
+          ref={inputRef}
+          value={form.keywords}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+        />
+
+        <div className="flex flex-wrap gap-2 mt-2">
+          {SUGGESTED_KEYWORDS.map((kw) => {
+            const isSelected = form.keywords
+              .toLowerCase()
+              .split(",")
+              .map((k) => k.trim())
+              .includes(kw.toLowerCase());
+
+            return (
+              <button
+                key={kw}
+                type="button"
+                className={`suggested-keyword ${isSelected ? "selected" : ""}`}
+                onClick={() => {
+                  const keywordsArray = form.keywords
+                    .split(",")
+                    .map((k) => k.trim())
+                    .filter((k) => k.length > 0);
+
+                  if (isSelected) {
+                    setForm((prev) => ({
+                      ...prev,
+                      keywords: keywordsArray
+                        .filter((k) => k.toLowerCase() !== kw.toLowerCase())
+                        .join(", "),
+                    }));
+                  } else {
+                    setForm((prev) => ({
+                      ...prev,
+                      keywords: keywordsArray.length
+                        ? `${prev.keywords}, ${kw}`
+                        : kw,
+                    }));
+                  }
+                }}
+              >
+                {kw}
+              </button>
+            );
+          })}
         </div>
+      </div>
+
 
         <div className="form-group">
           <label>Bid Amount (min 1 zł) *</label>
@@ -265,21 +294,6 @@ export const CampaignForm = () => {
             value={form.radius}
             onChange={handleChange}
           />
-        </div>
-
-        <div className="form-group">
-          <label>Product *</label>
-          <select
-            name="productId"
-            required
-            value={form.productId}
-            onChange={handleChange}
-          >
-            <option value="">Select Product</option>
-            {PRODUCTS.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
         </div>
 
         <div className="form-buttons">

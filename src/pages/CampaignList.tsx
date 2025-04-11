@@ -1,4 +1,4 @@
-import { CampaignCard } from "../components/CampaignCard/CampaignCard";
+import { CampaignCard } from "../components/CampaignCard";
 import { Link } from "react-router-dom";
 import { useCampaigns } from "../context/CampaignContext";
 import { useEmerald } from "../context/EmeraldContext";
