@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEmerald } from "../context/EmeraldContext";
 import { useCampaigns } from "../context/CampaignContext";
 import { PRODUCTS } from "../data/mockProducts";
@@ -7,14 +7,20 @@ import "../styles/CampaignForm.css";
 import { TownSelect } from "../components/TownSelect";
 
 const SUGGESTED_KEYWORDS = ["sale", "new", "fashion", "tech", "deal", "summer", "winter"];
-const CITIES = ["Warsaw", "Krakow", "Gdansk", "Wroclaw"];
 
 export const CampaignForm = () => {
   const navigate = useNavigate();
-  const { budget, deduct } = useEmerald();
-  const { addCampaign } = useCampaigns();
+  const { id } = useParams();
+  const isEditing = !!id;
+
+  const { campaigns, addCampaign, updateCampaign } = useCampaigns();
+  const { budget, deduct, restore } = useEmerald();
+
   const suggestionsRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const [notFound, setNotFound] = useState(false);
+  const [originalFund, setOriginalFund] = useState(0);
 
   const [form, setForm] = useState({
     name: "",
@@ -30,13 +36,37 @@ export const CampaignForm = () => {
   const [keywordSuggestions, setKeywordSuggestions] = useState<string[]>([]);
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
 
+  useEffect(() => {
+    if (isEditing) {
+      const campaign = campaigns.find((c) => c.id === id);
+      if (!campaign) {
+        setNotFound(true);
+        return;
+      }
+
+      setForm({
+        name: campaign.name,
+        keywords: campaign.keywords.join(", "),
+        bidAmount: campaign.bidAmount,
+        campaignFund: campaign.campaignFund,
+        status: campaign.status ? "on" : "off",
+        city: campaign.city,
+        radius: campaign.radius,
+        productId: campaign.productId,
+      });
+
+      setOriginalFund(campaign.campaignFund);
+    }
+  }, [isEditing, id, campaigns]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
     if (name === "keywords") {
-      const filtered = SUGGESTED_KEYWORDS.filter((kw) =>
-        kw.toLowerCase().startsWith(value.toLowerCase()) &&
-        !form.keywords.toLowerCase().split(",").map(k => k.trim()).includes(kw.toLowerCase())
+      const filtered = SUGGESTED_KEYWORDS.filter(
+        (kw) =>
+          kw.toLowerCase().startsWith(value.toLowerCase()) &&
+          !form.keywords.toLowerCase().split(",").map((k) => k.trim()).includes(kw.toLowerCase())
       );
       setKeywordSuggestions(filtered);
       setHighlightedIndex(-1);
@@ -82,18 +112,13 @@ export const CampaignForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (form.campaignFund > budget) {
-      alert("Not enough Emerald Funds.");
-      return;
-    }
-
     const keywords = form.keywords
       .split(",")
       .map((k) => k.trim())
       .filter((k) => k.length > 0);
 
     const newCampaign = {
-      id: crypto.randomUUID(),
+      id: id || crypto.randomUUID(),
       name: form.name,
       keywords,
       bidAmount: form.bidAmount,
@@ -104,14 +129,48 @@ export const CampaignForm = () => {
       productId: form.productId,
     };
 
-    deduct(form.campaignFund);
-    addCampaign(newCampaign);
+    if (isEditing) {
+      const diff = form.campaignFund - originalFund;
+      if (diff > 0 && diff > budget) {
+        alert("Not enough Emerald Funds.");
+        return;
+      }
+
+      if (diff > 0) deduct(diff);
+      if (diff < 0) restore(-diff);
+
+      updateCampaign(newCampaign);
+    } else {
+      if (form.campaignFund > budget) {
+        alert("Not enough Emerald Funds.");
+        return;
+      }
+      deduct(form.campaignFund);
+      addCampaign(newCampaign);
+    }
+
     navigate("/");
   };
 
+  if (notFound) {
+    return (
+      <div className="min-h-screen flex flex-col justify-center items-center text-center p-6">
+        <h2 className="text-2xl font-bold text-gray-700 mb-4">Campaign not found</h2>
+        <button
+          className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
+          onClick={() => navigate("/")}
+        >
+          Back to Home
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-blue-50 p-6 flex flex-col items-center">
-      <h1 className="text-4xl font-extrabold mb-8 text-gray-800">Create New Campaign</h1>
+      <h1 className="text-4xl font-extrabold mb-8 text-gray-800">
+        {isEditing ? "Edit Campaign" : "Create New Campaign"}
+      </h1>
 
       <form onSubmit={handleSubmit} className="campaign-form">
         <div className="form-group">
@@ -143,11 +202,7 @@ export const CampaignForm = () => {
               {keywordSuggestions.map((kw, index) => (
                 <li
                   key={kw}
-                  className={
-                    index === highlightedIndex
-                      ? "highlighted"
-                      : ""
-                  }
+                  className={index === highlightedIndex ? "highlighted" : ""}
                   onClick={() => handleSuggestionClick(kw)}
                 >
                   {kw}
@@ -229,7 +284,7 @@ export const CampaignForm = () => {
 
         <div className="form-buttons">
           <button type="submit" className="submit-btn bg-emerald-600 hover:bg-emerald-700">
-            Create Campaign
+            {isEditing ? "Save Changes" : "Create Campaign"}
           </button>
           <button type="button" className="cancel-btn bg-red-600" onClick={() => navigate("/")}>Cancel</button>
         </div>

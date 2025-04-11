@@ -12,6 +12,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<CampaignList />} />
             <Route path="/new" element={<CampaignForm />} />
+            <Route path="/edit/:id" element={<CampaignForm />} />
           </Routes>
         </Router>
       </AppInitializer>
